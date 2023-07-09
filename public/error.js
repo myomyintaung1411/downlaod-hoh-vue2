@@ -1,7 +1,7 @@
 const error = {
-    ios: "http://app.tyworld-win.top/app/sls.mobileconfig",
-    android: "http://app.tyworld-win.top/app/sls.apk",
-    android_two: "http://app.tyworld-win.top/app/native.apk",
-  };
+  ios: "https://app.sls010.top/app/shoulashou.mobileconfig",
+  android: "https://app.sls010.top/app/sls.apk",
+  android_two: "https://app.sls010.top/app/shoulahou.apk",
+};
   
   window.Global = error;

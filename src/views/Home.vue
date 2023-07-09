@@ -308,6 +308,7 @@ export default {
     },
   },
   mounted() {
+    console.log(Global)
     if (this.$route?.query !== undefined && this.$route?.query?.shareCode !== undefined) {
       console.log(this.$route?.query)
       this.invite_code = this.$route?.query?.shareCode
