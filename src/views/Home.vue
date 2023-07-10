@@ -104,9 +104,9 @@
             </button>
           </div>
         </form>
-        <div class="mt-2">
-          <div class="py-3 w-full relative">
-            <div v-if="isAndroid"
+        <div v-if="app_url" class="mt-2">
+          <!-- <div v-if="isAndroid" class="py-3 w-full relative">
+            <div 
               @click="downLoad(0)"
               class="py-4 bg-[#fa3636] rounded text-center flex items-center justify-center space-x-4 cursor-pointer"
             >
@@ -135,7 +135,40 @@
               <img src="@/assets/iOS.svg" alt="" class="w-7 h-7" />
               <span class="font-bold pt-1 text-base tracking-wider">苹果下载</span>
             </div>
+          </div> -->
+
+        <!-- <div v-if="isAndroid" class="py-3 w-full relative">
+            <a :href="app_url.android1" download
+              
+              class="py-4 bg-[#fa3636] rounded text-center flex items-center justify-center space-x-4 cursor-pointer"
+            >
+              <img src="@/assets/android.svg" alt="" class="w-7 h-7" />
+              <span class="font-bold pt-1 text-base tracking-wider uppercase"
+                >安卓下载一</span
+              >
+            </a>
+          </div> -->
+
+          <div v-if="isAndroid" class="py-3 w-full relative">
+            <a :href="app_url.android2" download
+             
+              class="py-4 bg-[#fa3636] rounded text-center flex items-center justify-center space-x-4 cursor-pointer"
+            >
+              <img src="@/assets/android.svg" alt="" class="w-7 h-7" />
+              <span class="font-bold pt-1 text-base tracking-wider uppercase"
+                >安卓下载</span
+              >
+            </a>
           </div>
+
+          <div v-if="isIOS" class="py-3 w-full relative">
+            <a :href="app_url.ios" download class="py-4 bg-[#fa3636] rounded text-center flex items-center justify-center space-x-4 cursor-pointer"
+            >
+              <img src="@/assets/iOS.svg" alt="" class="w-7 h-7" />
+              <span class="font-bold pt-1 text-base tracking-wider">苹果下载</span>
+            </a>
+          </div>
+
         </div>
       </section>
     </div>
@@ -162,6 +195,7 @@ export default {
       invite_code: '',
       isIOS: false,
       isAndroid: false,
+      app_url:null
     }
   },
   methods: {
@@ -283,16 +317,16 @@ export default {
     downLoad(number) {
       switch (number) {
         case 0:
-          window.open(Global?.android)
+          window.open(this.app_url?.android1)
           // showToast('test 1')
           break
         case 1:
           // showToast('test 2')
-          window.open(Global?.ios)
+          window.open(this.app_url?.ios)
           break
         case 2:
           // showToast('test 2')
-          window.open(Global?.android_two)
+          window.open(this.app_url?.android2)
           break
 
         default:
@@ -306,8 +340,36 @@ export default {
       this.isAndroid = /Android/.test(userAgent)
       this.isIOS = /iPhone|iPad|iPod/.test(userAgent)
     },
+
+    getDownLink(){
+      Toast.loading({
+        message: '请稍后...',
+        forbidClick: true,
+        duration: 2000,
+      })
+      this.loading = true
+
+      allApi
+        .DownLoadApp()
+        .then((res) => {
+          this.loading = false
+          Toast(res?.data?.msg)
+            console.log(res.data)
+          if (res.data.code == '0') {
+            this.app_url = res.data?.data
+            // setTimeout(() => {
+            //    router.push({ path: '/download', query: { inviteCode: invite_code.value } })
+            // }, 2000);
+          }
+        })
+        .catch((e) => {
+          this.loading = false
+          console.log(e, 'error')
+        })
+    },
   },
   mounted() {
+    this.getDownLink()
     if (this.$route?.query !== undefined && this.$route?.query?.shareCode !== undefined) {
       console.log(this.$route?.query)
       this.invite_code = this.$route?.query?.shareCode

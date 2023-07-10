@@ -17,4 +17,12 @@ export default {
             requestBase: '/api',
         })
     },
+    DownLoadApp(data){
+        return instance({
+            url: '/users/get_downlink',
+            method: 'get',
+            data,
+            requestBase: '/api',
+        })
+    },
 }
