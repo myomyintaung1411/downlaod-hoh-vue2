@@ -46,8 +46,8 @@
               class="border-none w-full h-full text-base flex justify-center items-center relative"
             >
               <input
-                disabled
-                :value="invite_code"
+               
+                v-model="invite_code"
                 type="text"
                 maxlength="8"
                 min="8"
