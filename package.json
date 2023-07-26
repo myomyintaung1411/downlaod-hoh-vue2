@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "postinstall": "husky install",
-    "serve": "vite",
+    "dev": "vite --host",
     "build": "vite build",
     "build:prod": "vite build --mode prod",
     "lint": "eslint --fix --ignore-path .gitignore"

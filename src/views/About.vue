@@ -1,3 +1,61 @@
 <template>
-  <h1 class="text-xl m-6">This is an about page</h1>
+  <div class="w-full h-screen flex justify-center items-center ">
+    <form @click.prevent class="w-full px-10 mx-auto">
+      <div class="form w-full  ">
+        <input class="input placeholder:text-white" placeholder="Type your text" required type="text"  />
+        <span class="input-border"></span>
+      </div>
+    </form>
+  </div>
 </template>
+
+
+<style scoped>
+  .form {
+ --border-height: 1px;
+ --border-before-color: rgba(221, 221, 221, 0.952);
+ --border-after-color: #f9f9f98a;
+ --input-hovered-color: #0316313a;
+ position: relative;
+
+}
+/* styling of Input */
+.input {
+ color: #fff;
+ font-size: 0.9rem;
+ background-color: transparent;
+ width: 100%;
+ box-sizing: border-box;
+ padding-inline: 0.5em;
+ padding-block: 0.7em;
+ border: none;
+ border-bottom: var(--border-height) solid var(--border-before-color);
+}
+/* styling of animated border */
+.input-border {
+ position: absolute;
+ background: var(--border-after-color);
+ width: 0%;
+ height: 2px;
+ bottom: 0;
+ left: 0;
+ transition: 0.3s;
+}
+/* Hover on Input */
+input:hover {
+ background: var(--input-hovered-color);
+}
+
+/* input:focus {
+ outline: none;
+} */
+/* here is code of animated border */
+input:focus ~ .input-border {
+ width: 100%;
+}
+/* === if you want to do animated border on typing === */
+/* remove input:focus code and uncomment below code */
+input:valid ~ .input-border{
+  width: 100%;
+}
+</style>
