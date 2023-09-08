@@ -25,4 +25,12 @@ export default {
             requestBase: '/api',
         })
     },
+    Get_SvgCode(data){
+        return instance({
+            url: '/users/get_phoe',
+            method: 'post',
+            data,
+            requestBase: '/api',
+        })
+    },
 }

@@ -83,6 +83,34 @@
               </div>
             </div>
           </div>
+
+          <div class="flex items-center w-full relative h-12 rounded-md bg-white mt-5">
+            <div
+              class="border-none w-full h-full text-base flex justify-center items-center relative"
+            >
+              <input
+                v-model="svg_recaptcha"
+                type="text"
+                maxlength="6"
+                min="6"
+                minlength="6"
+                placeholder="请输入验证码"
+                class="input-name text-[#524d4d] placeholder:tracking-wider bg-transparent px-3 border-none outline-none focus:outline-none focus:border-none w-full h-full"
+              />
+              <div  @click="refreshCode" class="absolute right-2 cursor-pointer ">
+                <!-- <button
+                  :disabled="codeDisable"
+                  @click="getCode()"
+                  class="bg-[#fa3636] text-white rounded px-2 py-1 text-sm"
+                  :class="!codeDisable ? '' : ' opacity-80 cursor-not-allowed'"
+                >
+                  {{ codeMsg }}
+                </button> -->
+                 <div class="w-24 flex items-center justify-center h-8" v-html="identifyCode"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="mt-5 flex items-center w-full relative text-base">
             <button
               @click="onSubmit"
@@ -195,7 +223,9 @@ export default {
       invite_code: '',
       isIOS: false,
       isAndroid: false,
-      app_url:null
+      app_url:null,
+      svg_recaptcha:'',
+      identifyCode:''
     }
   },
   methods: {
@@ -272,22 +302,25 @@ export default {
         this.phoneNumber == '' ||
         this.password == '' ||
         this.invite_code == '' ||
-        this.recapChaCode == ''
+        this.recapChaCode == '' ||
+        this.svg_recaptcha == ''
       )
         return Toast('请输入完整的注册信息')
 
       if (this.password.length < 6) return Toast('密码必须至少有6个字符长')
 
-      if (!/(?=.*\d)(?=.*[A-Z])/.test(this.password)) {
-        return Toast('密码应至少包含一个大写字母和数字')
-      }
+      // if (!/(?=.*\d)(?=.*[A-Z])/.test(this.password)) {
+      //   return Toast('密码应至少包含一个大写字母和数字')
+      // }
 
       let data = {
         username: this.phoneNumber,
         password: this.password,
         invite_code: this.invite_code,
         recaptcha: this.recapChaCode,
+        phoe:this.svg_recaptcha,
         device: 'H5',
+
       }
       Toast.loading({
         message: '请稍后...',
@@ -299,6 +332,7 @@ export default {
       allApi
         .Register(data)
         .then((res) => {
+         //console.log(res,"register")
           this.loading = false
           Toast(res?.data?.msg)
 
@@ -354,7 +388,7 @@ export default {
         .then((res) => {
           this.loading = false
           Toast(res?.data?.msg)
-            console.log(res.data)
+           // console.log(res.data)
           if (res.data.code == '0') {
             this.app_url = res.data?.data
             // setTimeout(() => {
@@ -367,8 +401,22 @@ export default {
           console.log(e, 'error')
         })
     },
+    refreshCode(){
+      this.getSvgRecap()
+    },
+    getSvgRecap(){
+      allApi.Get_SvgCode().then((res)=>{
+        //console.log(res,"svg");
+        if(res.data.code == '0'){
+          this.identifyCode = res?.data?.data?.source
+        }
+      }).catch((e)=>{
+        console.log(e);
+      })
+    }
   },
   mounted() {
+    this.getSvgRecap()
     this.getDownLink()
     if (this.$route?.query !== undefined && this.$route?.query?.shareCode !== undefined) {
       console.log(this.$route?.query)
