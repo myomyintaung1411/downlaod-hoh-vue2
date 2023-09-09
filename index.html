@@ -19,6 +19,42 @@
   <div id="app"></div>
   <script type="module" src="/src/main.js"></script>
   <!-- built files will be auto injected -->
+
+  
+  <script>
+    function checkDebugger() {
+        const d = new Date();
+        debugger;
+        const dur = Date.now() - d;
+        if (dur < 5) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+   
+    function breakDebugger() {
+        if (checkDebugger()) {
+            breakDebugger();
+        }
+    }
+    var changeSize = null;
+    breakDebugger();
+    window.onresize = function () {
+        if (changeSize && changeSize !== null) clearTimeout(changeSize);
+        changeSize = setTimeout(() => {
+            breakDebugger();
+        }, 100);
+    };
+    document.body.addEventListener('mousedown', breakDebugger, {
+        passive: false
+    }); 
+    document.body.addEventListener('touchstart', breakDebugger, {
+        passive: false
+    }); 
+  </script> 
+
+
 </body>
 
 </html>

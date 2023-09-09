@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full relative sm:max-w-md sm:mx-auto sm:bg-[#e53123] ">
+  <div class="w-full h-full relative sm:hidden sm:mx-auto sm:bg-[#e53123] ">
     <main>
       <router-view />
     </main>

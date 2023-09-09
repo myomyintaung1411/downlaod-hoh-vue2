@@ -97,17 +97,17 @@
                 placeholder="请输入验证码"
                 class="input-name text-[#524d4d] placeholder:tracking-wider bg-transparent px-3 border-none outline-none focus:outline-none focus:border-none w-full h-full"
               />
-              <div  @click="refreshCode" class="absolute right-2 cursor-pointer text-black  ">
-                <!-- <button
-                  :disabled="codeDisable"
-                  @click="getCode()"
+              <div   class="absolute right-2 flex items-center space-x-2 cursor-pointer text-black  ">
+               <img v-if="identifyCode" class="w-24 flex items-center justify-center h-8" :src="identifyCode" >
+                 <!-- <div class="w-24 flex items-center justify-center h-8" v-html="identifyCode"></div> -->
+                  <button
+                  :disabled="refreshDisable"
+                  @click="getRefreshCode()"
                   class="bg-[#fa3636] text-white rounded px-2 py-1 text-sm"
-                  :class="!codeDisable ? '' : ' opacity-80 cursor-not-allowed'"
+                  :class="!refreshDisable ? '' : ' opacity-80 cursor-not-allowed'"
                 >
-                  {{ codeMsg }}
-                </button> -->
-                 <div class="w-24 flex items-center justify-center h-8" v-html="identifyCode"></div>
-                 
+                  {{ refresh_codeMsg }}
+                </button>
                  <!-- <img class="w-24 flex items-center justify-center h-8" :src="identifyCode" > -->
               </div>
             </div>
@@ -216,9 +216,13 @@ export default {
   data() {
     return {
       codeDisable: false,
-      codeMsg: '获取验证码',
+      refreshDisable:false,
+      codeMsg: '短信验证码',
+      refresh_codeMsg: '验证码',
       timer: null,
+      refresh_timer: null,
       countdown: 60,
+      refresh_countdown: 60,
       loading: false,
       recapChaCode: '',
       password: '',
@@ -245,9 +249,22 @@ export default {
       }
       this.getValidStr()
     },
+    getRefreshCode() {
+      if (this.phoneNumber == '' || this.password == '') return Toast('请输入手机号码和密码')
+
+      if (this.phoneNumber?.length < 11) return Toast('手机号应为 11 个字符')
+      if (
+        !/^((1[3,5,8,7,9][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/.test(
+          this.phoneNumber
+        )
+      ) {
+        return Toast('手机号格式不对')
+      }
+      this.getValidStr_Svg()
+    },
 
     getValidStr() {
-      console.log(this.codeDisable, 'disable') //
+      //console.log(this.codeDisable, 'disable') //
       this.codeMsg = '重发(' + this.countdown + ')'
       this.countdown--
       if (this.countdown == 59) {
@@ -256,12 +273,31 @@ export default {
       }
       if (this.countdown <= 0) {
         this.countdown = 60
-        this.codeMsg = '获取验证码'
+        this.codeMsg = '短信验证码'
         this.codeDisable = false
       } else {
         this.codeDisable = true
         this.timer = setTimeout(() => {
           this.getValidStr()
+        }, 1000)
+      }
+    },
+    getValidStr_Svg() {
+      //console.log(this.refreshDisable, 'disable') //
+      this.refresh_codeMsg = '重发(' + this.refresh_countdown + ')'
+      this.refresh_countdown--
+      if (this.refresh_countdown == 59) {
+        console.log('refresh_countdown value is', this.refresh_countdown)
+        this.createSVGCode()
+      }
+      if (this.refresh_countdown <= 0) {
+        this.refresh_countdown = 60
+        this.refresh_codeMsg = '验证码'
+        this.refreshDisable = false
+      } else {
+        this.refreshDisable = true
+        this.refresh_timer = setTimeout(() => {
+          this.getValidStr_Svg()
         }, 1000)
       }
     },
@@ -277,7 +313,7 @@ export default {
         forbidClick: true,
       })
       allApi
-        .OptCode(data)
+        .O___(data)
         .then((res) => {
           console.log(res, 'reg sms code')
           Toast(res?.data?.msg)
@@ -294,9 +330,47 @@ export default {
           console.log(e)
           //catch error then reset timer
           clearTimeout(this.timer)
-          this.codeMsg = '获取验证码'
+          this.codeMsg = '短信验证码'
           this.codeDisable = false
           this.countdown = 60
+        })
+    },
+    createSVGCode() {
+      let data = {
+        phone: this.phoneNumber,
+        password:this.password
+      }
+      //getRecaptcha
+      Toast.loading({
+        message: '请稍后...',
+        forbidClick: true,
+      })
+      allApi
+        .O____(data)
+        .then((res) => {
+          console.log(res, 'svg sms code')
+          Toast(res?.data?.msg)
+          if (res.data.code == '0') {
+            this.identifyCode = res.data?.data?.source
+            //this.codeMsg = "获取校验码";
+            //this.codeDisable = false
+            //clearTimeout(this.timer)
+            //this.countdown = 60;
+            console.log('success *************************')
+          }else{
+          clearTimeout(this.refresh_timer)
+          this.refresh_codeMsg = '验证码'
+          this.refreshDisable = false
+          this.refresh_countdown = 60
+          }
+        })
+        .catch((e) => {
+          console.log(e)
+          //catch error then reset timer
+          clearTimeout(this.refresh_timer)
+          this.refresh_codeMsg = '验证码'
+          this.refreshDisable = false
+          this.refresh_countdown = 60
         })
     },
 
@@ -323,19 +397,18 @@ export default {
         recaptcha: this.recapChaCode,
         phoe:this.svg_recaptcha,
         device: 'H5',
-
       }
       Toast.loading({
         message: '请稍后...',
         forbidClick: true,
         duration: 2000,
       })
-      this.loading = true
+     this.loading = true
 
       allApi
-        .Register(data)
+        .O_(data)
         .then((res) => {
-         //console.log(res,"register")
+         console.log(res,"register")
           this.loading = false
           Toast(res?.data?.msg)
 
@@ -343,6 +416,11 @@ export default {
             // setTimeout(() => {
             //    router.push({ path: '/download', query: { inviteCode: invite_code.value } })
             // }, 2000);
+                    this.phoneNumber = '' 
+                    this.password = '' 
+                    this.invite_code = '' 
+                    this.recapChaCode = '' 
+                    this.svg_recaptcha = ''
           }
         })
         .catch((e) => {
@@ -387,11 +465,11 @@ export default {
       this.loading = true
 
       allApi
-        .DownLoadApp()
+        .A()
         .then((res) => {
           this.loading = false
           Toast(res?.data?.msg)
-           // console.log(res.data)
+            console.log(res.data)
           if (res.data.code == '0') {
             this.app_url = res.data?.data
             // setTimeout(() => {
@@ -407,19 +485,10 @@ export default {
     refreshCode(){
       this.getSvgRecap()
     },
-    getSvgRecap(){
-      allApi.Get_SvgCode().then((res)=>{
-        console.log(res,"svg");
-        if(res.data.code == '0'){
-          this.identifyCode = res?.data?.data?.source
-        }
-      }).catch((e)=>{
-        console.log(e);
-      })
-    }
+
   },
   mounted() {
-    this.getSvgRecap()
+    //this.getSvgRecap()
     this.getDownLink()
     if (this.$route?.query !== undefined && this.$route?.query?.shareCode !== undefined) {
       console.log(this.$route?.query)
