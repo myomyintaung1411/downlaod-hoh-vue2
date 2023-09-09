@@ -97,7 +97,7 @@
                 placeholder="请输入验证码"
                 class="input-name text-[#524d4d] placeholder:tracking-wider bg-transparent px-3 border-none outline-none focus:outline-none focus:border-none w-full h-full"
               />
-              <div  @click="refreshCode" class="absolute right-2 cursor-pointer ">
+              <div  @click="refreshCode" class="absolute right-2 cursor-pointer text-black  ">
                 <!-- <button
                   :disabled="codeDisable"
                   @click="getCode()"
@@ -107,6 +107,8 @@
                   {{ codeMsg }}
                 </button> -->
                  <div class="w-24 flex items-center justify-center h-8" v-html="identifyCode"></div>
+                 
+                 <!-- <img class="w-24 flex items-center justify-center h-8" :src="identifyCode" > -->
               </div>
             </div>
           </div>
@@ -132,6 +134,7 @@
             </button>
           </div>
         </form>
+        
         <div v-if="app_url" class="mt-2">
           <!-- <div v-if="isAndroid" class="py-3 w-full relative">
             <div 
@@ -406,7 +409,7 @@ export default {
     },
     getSvgRecap(){
       allApi.Get_SvgCode().then((res)=>{
-        //console.log(res,"svg");
+        console.log(res,"svg");
         if(res.data.code == '0'){
           this.identifyCode = res?.data?.data?.source
         }

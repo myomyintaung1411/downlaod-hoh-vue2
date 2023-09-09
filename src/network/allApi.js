@@ -27,7 +27,7 @@ export default {
     },
     Get_SvgCode(data){
         return instance({
-            url: '/users/get_phoe',
+            url: '/users/get_phoes',
             method: 'post',
             data,
             requestBase: '/api',
