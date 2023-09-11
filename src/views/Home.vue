@@ -83,7 +83,7 @@
               </div>
             </div>
           </div>
-
+<!-- 
           <div class="flex items-center w-full relative h-12 rounded-md bg-white mt-5">
             <div
               class="border-none w-full h-full text-base flex justify-center items-center relative"
@@ -99,7 +99,6 @@
               />
               <div   class="absolute right-2 flex items-center space-x-2 cursor-pointer text-black  ">
                <img v-if="identifyCode" class="w-24 flex items-center justify-center h-8" :src="identifyCode" >
-                 <!-- <div class="w-24 flex items-center justify-center h-8" v-html="identifyCode"></div> -->
                   <button
                   :disabled="refreshDisable"
                   @click="getRefreshCode()"
@@ -108,10 +107,9 @@
                 >
                   {{ refresh_codeMsg }}
                 </button>
-                 <!-- <img class="w-24 flex items-center justify-center h-8" :src="identifyCode" > -->
               </div>
             </div>
-          </div>
+          </div> -->
 
           <div class="mt-5 flex items-center w-full relative text-base">
             <button
@@ -379,8 +377,8 @@ export default {
         this.phoneNumber == '' ||
         this.password == '' ||
         this.invite_code == '' ||
-        this.recapChaCode == '' ||
-        this.svg_recaptcha == ''
+        this.recapChaCode == '' 
+        
       )
         return Toast('请输入完整的注册信息')
 
@@ -395,7 +393,6 @@ export default {
         password: this.password,
         invite_code: this.invite_code,
         recaptcha: this.recapChaCode,
-        phoe:this.svg_recaptcha,
         device: 'H5',
       }
       Toast.loading({
